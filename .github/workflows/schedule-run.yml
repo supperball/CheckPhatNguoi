@@ -2,7 +2,7 @@ name: Schedule Run
 
 on:
   schedule:
-    - cron: '0 17 * * *'  # Every day at 00:00 Vietnam time (UTC+7)
+    - cron: '* * * * *'  # Every minute for testing
   workflow_dispatch:
 
 env:
