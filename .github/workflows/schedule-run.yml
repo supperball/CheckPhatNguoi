@@ -1,8 +1,8 @@
 name: Schedule Run
 
 on:
-  # schedule:
-  #   - cron: 0 0 * * 0
+  schedule:
+    - cron: '0 17 * * *'  # Every day at 00:00 Vietnam time (UTC+7)
   workflow_dispatch:
 
 env:
@@ -51,4 +51,13 @@ jobs:
         run: just restore-env
 
       - name: Run cpn-cli
-        run: just
+        run: just run | tee /tmp/cpn_output.log
+
+      - name: Send Telegram Notification
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          chmod +x .github/scripts/send_telegram.sh
+          .github/scripts/send_telegram.sh /tmp/cpn_output.log
