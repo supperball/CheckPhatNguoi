@@ -19,9 +19,9 @@ if [ ! -f "$LOG_FILE" ]; then
 fi
 
 # Parse output for multiple vehicles
-PLATES=($(grep "Biển số:" "$LOG_FILE" | sed 's/.*: //'))
-OWNERS=($(grep "Chủ sở hữu:" "$LOG_FILE" | sed 's/.*: //'))
-VIOLATIONS=($(grep "Số vi phạm chưa xử phạt:" "$LOG_FILE" | sed 's/.*: //'))
+mapfile -t PLATES < <(grep "Biển số:" "$LOG_FILE" | sed 's/.*: //')
+mapfile -t OWNERS < <(grep "Chủ sở hữu:" "$LOG_FILE" | sed 's/.*: //')
+mapfile -t VIOLATIONS < <(grep "Số vi phạm chưa xử phạt:" "$LOG_FILE" | sed 's/.*: //')
 
 # Count total violations
 TOTAL_VIOLATIONS=0
