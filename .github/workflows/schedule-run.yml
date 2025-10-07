@@ -2,7 +2,7 @@ name: Schedule Run
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Every 5 minutes for testing
+    - cron: '0 17 * * *'
   workflow_dispatch:
 
 env:
