@@ -18,21 +18,34 @@ if [ ! -f "$LOG_FILE" ]; then
     exit 1
 fi
 
-# Parse output
-VIOLATIONS=$(grep "Số vi phạm chưa xử phạt:" "$LOG_FILE" | sed 's/.*: //')
-PLATE=$(grep "Biển số:" "$LOG_FILE" | head -1 | sed 's/.*: //')
-OWNER=$(grep "Chủ sở hữu:" "$LOG_FILE" | sed 's/.*: //')
-VEHICLE_TYPE=$(grep "Loại phương tiện:" "$LOG_FILE" | sed 's/.*: //')
+# Parse output for multiple vehicles
+PLATES=($(grep "Biển số:" "$LOG_FILE" | sed 's/.*: //'))
+OWNERS=($(grep "Chủ sở hữu:" "$LOG_FILE" | sed 's/.*: //'))
+VIOLATIONS=($(grep "Số vi phạm chưa xử phạt:" "$LOG_FILE" | sed 's/.*: //'))
+
+# Count total violations
+TOTAL_VIOLATIONS=0
+for v in "${VIOLATIONS[@]}"; do
+    TOTAL_VIOLATIONS=$((TOTAL_VIOLATIONS + v))
+done
 
 # Build message
-MESSAGE="🤖 *GitHub Actions - Kiểm tra phạt nguội*%0A%0A"
-MESSAGE+="📋 Biển số: \`${PLATE}\`%0A"
-MESSAGE+="👤 Chủ xe: ${OWNER}%0A"
-MESSAGE+="🏍️ Loại xe: ${VEHICLE_TYPE}%0A"
-MESSAGE+="⚠️ Vi phạm chưa xử phạt: *${VIOLATIONS}*%0A"
-MESSAGE+="%0A⏰ Thời gian: $(TZ=Asia/Ho_Chi_Minh date '+%d/%m/%Y %H:%M:%S')%0A"
+MESSAGE="🤖 *GitHub Actions - Kiểm tra phạt nguội*%0A"
+MESSAGE+="⏰ $(TZ=Asia/Ho_Chi_Minh date '+%d/%m/%Y %H:%M:%S')%0A%0A"
 
-if [ "$VIOLATIONS" = "0" ]; then
+# Add info for each vehicle
+for i in "${!PLATES[@]}"; do
+    MESSAGE+="━━━━━━━━━━━━━━━━%0A"
+    MESSAGE+="� *Xe $(($i + 1))*%0A"
+    MESSAGE+="�📋 Biển số: \`${PLATES[$i]}\`%0A"
+    MESSAGE+="👤 Chủ xe: ${OWNERS[$i]}%0A"
+    MESSAGE+="⚠️ Vi phạm: *${VIOLATIONS[$i]}*%0A"
+done
+
+MESSAGE+="━━━━━━━━━━━━━━━━%0A"
+MESSAGE+="%0A📊 *Tổng kết:* ${#PLATES[@]} xe%0A"
+
+if [ "$TOTAL_VIOLATIONS" = "0" ]; then
     MESSAGE+="✅ Không có vi phạm nào!"
 else
     MESSAGE+="🚨 *CÓ VI PHẠM MỚI!*"
