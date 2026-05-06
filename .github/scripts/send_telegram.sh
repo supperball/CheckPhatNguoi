@@ -46,7 +46,12 @@ MESSAGE+="━━━━━━━━━━━━━━━━%0A"
 MESSAGE+="%0A📊 *Tổng kết:* ${#PLATES[@]} xe%0A"
 
 if [ "$TOTAL_VIOLATIONS" = "0" ]; then
-    MESSAGE+="✅ Không có vi phạm nào!"
+    if [ ${#PLATES[@]} -eq 0 ]; then
+        MESSAGE+="⚠️ *KHÔNG TÌM THẤY DỮ LIỆU XE!*%0A"
+        MESSAGE+="📝 *Log chi tiết:*%0A\`\`\`%0A$(tail -n 10 "$LOG_FILE")%0A\`\`\`"
+    else
+        MESSAGE+="✅ Không có vi phạm nào!"
+    fi
 else
     MESSAGE+="🚨 *CÓ VI PHẠM MỚI!*"
 fi
