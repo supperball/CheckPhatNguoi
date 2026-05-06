@@ -1,12 +1,12 @@
 #!/bin/bash
 # Script to test cpn-cli and always send Telegram notification
 
-BOT_TOKEN="8305269584:AAGJbN15m6tOLpmj5MoBQG1fD_pz_Q1hJHk"
-CHAT_ID="1034510505"
+BOT_TOKEN="8275446939:AAFN98uCfefpOOtdN64Js-QmJco8I39LZ1c"
+CHAT_ID="-1003811649435"
 
 # Run cpn-cli
 echo "🔍 Đang kiểm tra phạt nguội..."
-OUTPUT=$(cd /workspaces/cpn-gha && export PATH="$HOME/.local/bin:$PATH" && just run 2>&1)
+OUTPUT=$(export PATH="$HOME/.local/bin:$PATH" && just run 2>&1)
 
 # Parse output for multiple vehicles
 PLATES=($(echo "$OUTPUT" | grep "Biển số:" | sed 's/.*: //'))

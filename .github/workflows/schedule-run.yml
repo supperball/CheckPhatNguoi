@@ -46,10 +46,10 @@ jobs:
       - uses: extractions/setup-just@v2
 
       - name: Install deps
-        run: just restore-env
+        run: uv sync
 
       - name: Run cpn-cli
-        run: just run | tee /tmp/cpn_output.log
+        run: uv run cpn-cli | tee /tmp/cpn_output.log
 
       - name: Send Telegram Notification
         if: always()
