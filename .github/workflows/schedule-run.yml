@@ -19,11 +19,27 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Restore config
+        env:
+          CONFIG_JSON: ${{ secrets.CONFIG_JSON }}
+          CONFIG_URL: ${{ secrets.config }}
         run: |
-          if [ -n "${{ secrets.CONFIG_JSON }}" ]; then
-            echo '${{ secrets.CONFIG_JSON }}' > config.json
-          elif [ -n "${{ secrets.config }}" ]; then
-            curl -o config.json ${{ secrets.config }}
+          if [ -n "$CONFIG_JSON" ]; then
+            echo "$CONFIG_JSON" > config.json
+            echo "✅ Created config.json from CONFIG_JSON secret"
+          elif [ -n "$CONFIG_URL" ]; then
+            curl -s -o config.json "$CONFIG_URL"
+            echo "✅ Downloaded config.json from config URL secret"
+          else
+            echo "⚠️ No config secret found!"
+          fi
+
+      - name: Check config
+        run: |
+          if [ -f "config.json" ]; then
+            echo "🔍 Config file exists. Content summary:"
+            grep -c "plate" config.json || echo "0"
+          else
+            echo "❌ config.json NOT found!"
           fi
 
       - name: Install uv
