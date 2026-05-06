@@ -1,70 +1,66 @@
-# CPN GitHub Actions
+# Cảnh Báo Phạt Nguội Tự Động (GitHub Actions)
 
-Tự động kiểm tra phạt nguội và gửi thông báo Telegram qua GitHub Actions.
+Công cụ tự động kiểm tra phạt nguội phương tiện giao thông tại Việt Nam và gửi thông báo trực tiếp qua Telegram. Dự án được tối ưu hóa để chạy hoàn toàn miễn phí trên GitHub Actions.
 
-## 🚀 Setup
+## 🚀 Tính năng chính
+- 🛡️ **Tự động hóa**: Chạy định kỳ hàng ngày vào 09:00 sáng (giờ VN).
+- 📱 **Thông báo Telegram**: Gửi chi tiết biển số, lỗi vi phạm và trạng thái xử lý.
+- 🛠️ **Dễ cấu hình**: Quản lý danh sách xe qua GitHub Secrets, không lộ thông tin cá nhân.
+- 🔍 **Độ chính xác cao**: Sử dụng Tesseract OCR để giải quyết Captcha từ nguồn dữ liệu gốc.
 
-### 1. Setup GitHub Secrets
+## ⚙️ Hướng dẫn thiết lập (GitHub Actions)
 
-Vào **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+Để hệ thống hoạt động, bạn cần cấu hình các **Secrets** trong Repository:
+Vào **Settings** → **Secrets and variables** → **Actions** → **New repository secret**.
 
-Thêm các secrets sau:
+### 1. Thông tin Telegram
+- `TELEGRAM_BOT_TOKEN`: Token của Bot (lấy từ @BotFather).
+- `TELEGRAM_CHAT_ID`: ID của người nhận hoặc nhóm nhận tin nhắn.
 
-- `TELEGRAM_BOT_TOKEN`: `xxxx:xxx`
-- `TELEGRAM_CHAT_ID`: `xxxxx`
-- `config` (optional): URL đến file config.json nếu muốn lưu ở nơi khác
+### 2. Cấu hình danh sách xe
+- `CONFIG_JSON`: Nội dung cấu hình danh sách xe cần kiểm tra.
+  
+**Định dạng chuẩn của `CONFIG_JSON`:**
+```json
+{
+    "plates_infos": [
+        {
+            "plate": "81A26559",
+            "type": "car"
+        }
+    ]
+}
+```
+*Lưu ý về trường `type`:*
+- Ô tô: dùng `"car"` hoặc `"Ô tô"`
+- Xe máy: dùng `"motorbike"` hoặc `"Xe máy"`
+- Xe máy điện: dùng `"electric_motorbike"` hoặc `"Xe máy điện"`
 
-### 2. Test Workflow
+## 💻 Chạy thử tại máy cá nhân (Local)
 
-- Vào tab **Actions**
-- Chọn workflow **Schedule Run**
-- Click **Run workflow** → **Run workflow**
+### Yêu cầu
+1. **Tesseract OCR**: 
+   - macOS: `brew install tesseract`
+   - Linux: `sudo apt install tesseract-ocr`
+2. **uv**: [Trình quản lý package Python](https://astral.sh/uv).
 
-### 3. Schedule
-
-Workflow tự động chạy:
-- 🕐 **Hàng ngày lúc 00:00 giờ Việt Nam** (17:00 UTC)
-- 🔘 **Manual trigger**: Bất cứ lúc nào qua Actions tab
-
-## 📱 Thông báo Telegram
-
-Sau mỗi lần check, bạn sẽ nhận được thông báo gồm:
-- 📋 Biển số xe
-- 👤 Chủ xe
-- 🏍️ Loại xe
-- ⚠️ Số vi phạm chưa xử phạt
-- ⏰ Thời gian check
-
-## 🛠️ Local Testing
-
+### Các bước thực hiện
 ```bash
-# Test local với Telegram notification
-k
+# 1. Cài đặt môi trường
+uv sync
 
-# Hoặc
+# 2. Tạo file config.json (giống định dạng bên trên)
+# 3. Chạy kiểm tra
+uv run cpn-cli
+
+# 4. Chạy thử gửi Telegram (Yêu cầu đã sửa Token/ChatID trong script)
 ./test_telegram.sh
 ```
 
-## 📝 Config
+## ⏰ Lịch trình chạy (Schedule)
+Mặc định, workflow được thiết lập chạy vào **09:00 sáng hàng ngày** (giờ Việt Nam).
+Để thay đổi, bạn có thể chỉnh sửa giá trị `cron` trong file `.github/workflows/schedule-run.yml`:
+- `cron: '0 2 * * *'` (02:00 UTC = 09:00 VN).
 
-File `config.json` chứa thông tin:
-- Biển số xe cần check
-- Cấu hình Telegram bot
-- Các tùy chọn khác
-
-## 🔧 Modify Schedule
-
-Sửa file `.github/workflows/schedule-run.yml`:
-
-```yaml
-schedule:
-  - cron: '0 17 * * *'  # Every day at 00:00 Vietnam time (UTC+7)
-```
-
-Ví dụ cron (UTC time):
-- `0 17 * * *` - Hàng ngày lúc 00:00 VN (17:00 UTC)
-- `0 23 * * *` - Hàng ngày lúc 06:00 VN (23:00 UTC)
-- `0 10 * * *` - Hàng ngày lúc 17:00 VN (10:00 UTC)
-- `0 17 * * 0` - Mỗi Chủ nhật lúc 00:00 VN
-
-Sử dụng [crontab.guru](https://crontab.guru/) để tạo cron expression.
+## 📜 Giấy phép
+Dự án được phát hành dưới giấy phép MIT. Xem file `LICENSE` để biết thêm chi tiết.
