@@ -33,14 +33,6 @@ jobs:
             echo "⚠️ No config secret found!"
           fi
 
-      - name: Check config
-        run: |
-          if [ -f "config.json" ]; then
-            echo "🔍 Config file exists. Content summary:"
-            grep -c "plate" config.json || echo "0"
-          else
-            echo "❌ config.json NOT found!"
-          fi
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5

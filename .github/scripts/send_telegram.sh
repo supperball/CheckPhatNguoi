@@ -36,8 +36,8 @@ MESSAGE+="⏰ $(TZ=Asia/Ho_Chi_Minh date '+%d/%m/%Y %H:%M:%S')%0A%0A"
 # Add info for each vehicle
 for i in "${!PLATES[@]}"; do
     MESSAGE+="━━━━━━━━━━━━━━━━%0A"
-    MESSAGE+="� *Xe $(($i + 1))*%0A"
-    MESSAGE+="�📋 Biển số: \`${PLATES[$i]}\`%0A"
+    MESSAGE+="🚗 *Xe $(($i + 1))*%0A"
+    MESSAGE+="📋 Biển số: \`${PLATES[$i]}\`%0A"
     MESSAGE+="👤 Chủ xe: ${OWNERS[$i]}%0A"
     MESSAGE+="⚠️ Vi phạm: *${VIOLATIONS[$i]}*%0A"
 done
